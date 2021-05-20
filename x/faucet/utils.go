@@ -2,6 +2,7 @@ package faucet
 
 import (
 	"encoding/hex"
+	"fmt"
 
 	"bufio"
 	"encoding/json"
@@ -11,6 +12,7 @@ import (
 	"os"
 	"strconv"
 
+	"gitee.com/xchain/go-xchain/app/protocol"
 	"gitee.com/xchain/go-xchain/client/context"
 	"gitee.com/xchain/go-xchain/x/auth"
 	"gitee.com/xchain/go-xchain/x/staking"
@@ -283,6 +285,26 @@ func GetSystemIssuerFromValidators(cdc *codec.Codec) (sdk.AccAddress, error) {
 	for _, kv := range resKVs {
 		systemissuer := sdk.AccAddress(stakingtypes.MustUnmarshalValidator(cdc, kv.Value).OperatorAddress.Bytes())
 		return systemissuer, nil
+	}
+	return nil, nil
+}
+
+func GetSystemIssuerFromGuardians(cdc *codec.Codec) (sdk.AccAddress, error) {
+	cliCtx := context.NewCLIContext().WithCodec(cdc)
+	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", protocol.GuardianRoute, guardian.QueryProfilers), nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var profilers guardian.Profilers
+	err = cdc.UnmarshalJSON(res, &profilers)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, profiler := range profilers {
+		return profiler.Address, nil
 	}
 	return nil, nil
 }

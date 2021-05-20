@@ -42,6 +42,7 @@ import (
 	distcmd "gitee.com/xchain/go-xchain/x/distribution"
 	ssdistClient "gitee.com/xchain/go-xchain/x/distribution/client"
 	ssgovClient "gitee.com/xchain/go-xchain/x/gov/client"
+	ssguardianClient "gitee.com/xchain/go-xchain/x/guardian/client/cli"
 	ssmintClient "gitee.com/xchain/go-xchain/x/mint/client/cli"
 	sslashingClient "gitee.com/xchain/go-xchain/x/slashing/client"
 	sstakingClient "gitee.com/xchain/go-xchain/x/staking/client"
@@ -161,6 +162,7 @@ func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
 		sscqservicecmd.GetCmdCall(cdc),
 		ssmintClient.GetCmdQueryBlockRewards(cdc),
 		ssmintClient.GetCmdQueryTotalProvisions(cdc),
+		ssguardianClient.GetCmdQueryProfilers(cdc),
 		upgradecmd.GetInfoCmd("upgrade", cdc),
 		upgradecmd.GetCmdQuerySignals("upgrade", cdc),
 	)

@@ -29,7 +29,7 @@ func GetCmdAdd(cdc *codec.Codec) *cobra.Command {
 			txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			systemissuer, err := faucet.GetSystemIssuerFromValidators(cdc)
+			systemissuer, err := faucet.GetSystemIssuerFromGuardians(cdc)
 			if err != nil {
 				return err
 			}

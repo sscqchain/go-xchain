@@ -11,7 +11,9 @@ import (
 	"os"
 	"strconv"
 
+	"gitee.com/xchain/go-xchain/client/context"
 	"gitee.com/xchain/go-xchain/x/auth"
+	"gitee.com/xchain/go-xchain/x/staking"
 	"github.com/tendermint/go-amino"
 
 	"strings"
@@ -33,6 +35,7 @@ import (
 	"gitee.com/xchain/go-xchain/x/service"
 	"gitee.com/xchain/go-xchain/x/slashing"
 	stake "gitee.com/xchain/go-xchain/x/staking"
+	stakingtypes "gitee.com/xchain/go-xchain/x/staking/types"
 	"gitee.com/xchain/go-xchain/x/upgrade"
 )
 
@@ -267,4 +270,19 @@ func ReadAccounts(filepath string) (accounts []string, balances []int, err error
 		balances = append(balances, balance)
 	}
 	return accounts, balances, sc.Err()
+}
+
+func GetSystemIssuerFromValidators(cdc *codec.Codec) (sdk.AccAddress, error) {
+	cliCtx := context.NewCLIContext().WithCodec(cdc)
+	resKVs, err := cliCtx.QuerySubspace(staking.ValidatorsKey, "staking")
+	if err != nil {
+		return nil, err
+	}
+
+	// var validators stakingtypes.Validators // changed by junying, 2020-02-04, origin:staking.Validators
+	for _, kv := range resKVs {
+		systemissuer := sdk.AccAddress(stakingtypes.MustUnmarshalValidator(cdc, kv.Value).OperatorAddress.Bytes())
+		return systemissuer, nil
+	}
+	return nil, nil
 }

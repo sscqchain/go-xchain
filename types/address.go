@@ -194,7 +194,11 @@ func (aa AccAddress) Format(s fmt.State, verb rune) {
 	}
 }
 
-// ----------------------------------------------------------------------------
+func ValAddress2AccAddress(operatoraddr ValAddress) (accountaddr AccAddress) {
+	return AccAddress(operatoraddr.Bytes())
+}
+
+// ---------------------------------------------------------------------------
 // validator operator
 // ----------------------------------------------------------------------------
 

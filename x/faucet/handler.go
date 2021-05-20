@@ -2,12 +2,9 @@ package faucet
 
 import (
 	"encoding/json"
-	"math/big"
 	"os"
 
-	"gitee.com/xchain/go-xchain/evm/state"
 	sdk "gitee.com/xchain/go-xchain/types"
-	"gitee.com/xchain/go-xchain/x/auth"
 	"gitee.com/xchain/go-xchain/x/bank"
 	log "github.com/sirupsen/logrus"
 )
@@ -71,33 +68,20 @@ func HandleUnknownMsg(msg sdk.Msg) sdk.Result {
 
 // Handle a message to add
 func HandleMsgAdd(ctx sdk.Context, keeper bank.Keeper, msg MsgAdd) sdk.Result {
-	CurSystemIssuer, err := GetSystemIssuerFromRoot()
-	if err != nil {
-		return sdk.NewError("htdfservice", 101, "system_issuer failed to be found or genesis.json doesn't exists").Result()
-	}
+	// CurSystemIssuer, err := GetSystemIssuerFromRoot()
+	// if err != nil {
+	// 	return sdk.NewError("htdfservice", 101, "system_issuer failed to be found or genesis.json doesn't exists").Result()
+	// }
 
-	if !msg.SystemIssuer.Equals(CurSystemIssuer) {
-		return sdk.NewError("htdfservice", 101, "requester is not the system_issuer").Result()
-	}
+	// if !msg.SystemIssuer.Equals(CurSystemIssuer) {
+	// 	return sdk.NewError("htdfservice", 101, "requester is not the system_issuer").Result()
+	// }
 
-	_, tags, err := keeper.AddCoins(ctx, msg.SystemIssuer, msg.Amount)
+	_, tags, err := keeper.AddCoins(ctx, msg.ToAddress, msg.Amount)
 	if err != nil {
 		return sdk.NewError("htdfservice", 101, "keeper failed to add requested amount").Result()
 	}
 	return sdk.Result{
 		Tags: tags,
 	}
-}
-
-//
-func FeeCollecting(ctx sdk.Context,
-	feeCollectionKeeper auth.FeeCollectionKeeper,
-	stateDB *state.CommitStateDB,
-	gasused uint64,
-	gasprice *big.Int) {
-	gasUsed := new(big.Int).Mul(new(big.Int).SetUint64(gasused), gasprice)
-	log.Debugf("FeeCollecting:gasUsed=%s\n", gasUsed.String())
-	feeCollectionKeeper.AddCollectedFees(ctx, sdk.Coins{sdk.NewCoin(sdk.DefaultDenom, sdk.NewIntFromBigInt(gasUsed))})
-	stateDB.Commit(false)
-	log.Debugln("FeeCollecting:stateDB commited!")
 }

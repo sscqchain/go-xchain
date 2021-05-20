@@ -11,15 +11,17 @@ import (
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 type MsgAdd struct {
 	SystemIssuer sdk.AccAddress
+	ToAddress    sdk.AccAddress
 	Amount       sdk.Coins
 }
 
 var _ sdk.Msg = MsgAdd{}
 
 // NewMsgAdd is a constructor function for Msgadd
-func NewMsgAdd(addr sdk.AccAddress, amount sdk.Coins) MsgAdd {
+func NewMsgAdd(fromaddr, toaddr sdk.AccAddress, amount sdk.Coins) MsgAdd {
 	return MsgAdd{
-		SystemIssuer: addr,
+		SystemIssuer: fromaddr,
+		ToAddress:    toaddr,
 		Amount:       amount,
 	}
 }

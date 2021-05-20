@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"gitee.com/xchain/go-xchain/accounts/keystore"
-	v0 "gitee.com/xchain/go-xchain/app/v0"
 	"gitee.com/xchain/go-xchain/client"
 	"gitee.com/xchain/go-xchain/client/context"
 	"gitee.com/xchain/go-xchain/client/keys"
@@ -16,7 +15,6 @@ import (
 	authtxb "gitee.com/xchain/go-xchain/x/auth/client/txbuilder"
 	faucet "gitee.com/xchain/go-xchain/x/faucet"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // junying-todo-20190409
@@ -24,43 +22,45 @@ func GetCmdAdd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add [amount]",
 		Short: "publish new coin or add existing coin to system issuer except stake",
-		Long:  "hscli tx add 5satoshi --gas-price=100 --genfile /home/xxx/.hsd/config/genesis.json",
-		Args:  cobra.ExactArgs(1),
+		Long:  "hscli tx add sscq1yaaf9egv34zgua4lkanakktmv36ch8cl0lzkn3 5satoshi --gas-price=100",
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			GenFilePath := viper.GetString(v0.FlagGenFilePath)
-			if GenFilePath == "" {
-				fmt.Print("--genfile required. please indicate the path of genesis.json.\n")
-				return nil
-			}
-
-			systemissuer, err := faucet.GetSystemIssuerFromFile(GenFilePath)
+			systemissuer, err := faucet.GetSystemIssuerFromValidators(cdc)
 			if err != nil {
 				return err
 			}
 
-			if strings.Contains(args[0], "stake") {
+			if systemissuer == nil {
+				fmt.Print("failed to find systemissuer.\n")
+				return nil
+			}
+
+			toaddr, err := sdk.AccAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+
+			if strings.Contains(args[1], "stake") {
 				fmt.Print("stake can't be added. Or, system will panic. \n")
 				return nil
 			}
 
-			coins, err := sdk.ParseCoins(args[0])
+			coins, err := sdk.ParseCoins(args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := faucet.NewMsgAdd(systemissuer, coins)
+			msg := faucet.NewMsgAdd(systemissuer, toaddr, coins)
 			cliCtx.PrintResponse = true
 
 			return CompleteAndBroadcastTxCLI(txBldr, cliCtx, []sdk.Msg{msg}, systemissuer) //not completed yet, need account name
 		},
 	}
 
-	cmd.Flags().String(v0.FlagGenFilePath, "", "genesis.json path")
-	cmd.MarkFlagRequired(v0.FlagGenFilePath)
 	return client.PostCommands(cmd)[0]
 }
 

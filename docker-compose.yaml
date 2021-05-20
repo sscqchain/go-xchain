@@ -1,0 +1,105 @@
+version: '3'
+
+services:
+  ssdnode0:
+    container_name: ssdnode0
+    image: "falcon0125/ssdnode"
+    ports:
+      - "26656-26657:26656-26657"
+    environment:
+      - ID=0
+      - LOG=${LOG:-ssd.log}
+    volumes:
+      - ./build/testnet:/root:Z
+      - ./build/bin:/usr/local/bin:Z
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.2
+
+  ssdnode1:
+    container_name: ssdnode1
+    image: "falcon0125/ssdnode"
+    ports:
+      - "26659-26660:26656-26657"
+    environment:
+      - ID=1
+      - LOG=${LOG:-ssd.log}
+    volumes:
+      - ./build/testnet:/root:Z
+      - ./build/bin:/usr/local/bin:Z
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.3
+
+  ssdnode2:
+    container_name: ssdnode2
+    image: "falcon0125/ssdnode"
+    environment:
+      - ID=2
+      - LOG=${LOG:-ssd.log}
+    ports:
+      - "26661-26662:26656-26657"
+    volumes:
+      - ./build/testnet:/root:Z
+      - ./build/bin:/usr/local/bin:Z
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.4
+
+  ssdnode3:
+    container_name: ssdnode3
+    image: "falcon0125/ssdnode"
+    environment:
+      - ID=3
+      - LOG=${LOG:-ssd.log}
+    ports:
+      - "26663-26664:26656-26657"
+    volumes:
+      - ./build/testnet:/root:Z
+      - ./build/bin:/usr/local/bin:Z
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.5
+
+  ssclinode1:
+    stdin_open: true
+    tty: true
+    container_name: ssclinode1
+    image: "falcon0125/ssclinode"
+    environment:
+      - ID=4
+      - LOG=${LOG:-sscli.log}
+    ports:
+      - "26665-26666:26656-26657"
+    volumes:
+      - ./build/testnet:/root:Z
+      - ./build/bin:/usr/local/bin:Z
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.6
+
+  ssclinode2:
+    stdin_open: true
+    tty: true
+    container_name: ssclinode2
+    image: "falcon0125/ssclinode"
+    environment:
+      - ID=5
+      - LOG=${LOG:-sscli.log}
+    ports:
+      - "26667-26668:26656-26657"
+    volumes:
+      - ./build/testnet:/root:Z
+      - ./build/bin:/usr/local/bin:Z
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.7
+
+networks:
+  localnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      -
+        subnet: 192.168.10.0/16

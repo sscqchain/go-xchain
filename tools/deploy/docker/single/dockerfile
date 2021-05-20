@@ -1,0 +1,29 @@
+# Written by junying, 2019-04-10
+#
+# Simple usage with a mounted data directory:
+# > docker build -t sscqservice .
+# > docker images
+# > docker run -it -p 26657:26657 -p 26656:26656 -v ~/.ssd:/root/.ssd -v ~/.sscli:/root/.sscli  sscqservice ssd init --chain-id testchain
+# > docker run -it -p 26657:26657 -p 26656:26656 -v ~/.ssd:/root/.ssd -v ~/.sscli:/root/.sscli  sscqservice ssd start 
+FROM alpine:latest
+
+RUN apk add --update ca-certificates
+COPY ../../build/* /usr/local/bin/
+
+ENV CHAINID testchain
+ENV PASSPHRASE 12345678
+ENV BALANCE 10000000sscq
+
+RUN ssd init --chain-id $CHAINID
+RUN ssd add-genesis-account $(sscli accounts new $PASSPHRASE) $BALANCE
+RUN ssd add-genesis-account $(sscli accounts new $PASSPHRASE) $BALANCE
+RUN sscli config chain-id $CHAINID
+RUN sscli config output json
+RUN sscli config indent true
+RUN sscli config trust-node true
+
+EXPOSE 1317 26656 26657
+
+# Run ssd by default, omit entrypoint to ease using container with sscli
+CMD ["ssd"]
+# ENTRYPOINT ["ssd"]

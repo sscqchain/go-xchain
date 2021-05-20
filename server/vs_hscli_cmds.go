@@ -1,0 +1,43 @@
+package server
+
+import (
+	"fmt"
+	"os"
+	"runtime"
+	"strings"
+
+	"github.com/spf13/cobra"
+
+	"gitee.com/xchain/go-xchain/params"
+)
+
+const (
+	flagsLong             = "long"
+	sscliClientIdentifier = "sscli"
+)
+
+var (
+	// VersionCmd prints out the current sdk version
+	VersionHscliCmd = &cobra.Command{
+		Use:   "version",
+		Short: "Print the sscli version",
+		RunE: func(_ *cobra.Command, _ []string) error {
+			return versionHscli()
+		},
+	}
+)
+
+func init() {
+	VersionHscliCmd.Flags().Bool(flagsLong, false, "Print long version information")
+}
+
+func versionHscli() error {
+	fmt.Println(strings.Title(sscliClientIdentifier))
+	fmt.Println("Version:", params.VersionWithMeta)
+	fmt.Println("Architecture:", runtime.GOARCH)
+	fmt.Println("Go Version:", runtime.Version())
+	fmt.Println("Operating System:", runtime.GOOS)
+	fmt.Printf("GOPATH=%s\n", os.Getenv("GOPATH"))
+	fmt.Printf("GOROOT=%s\n", runtime.GOROOT())
+	return nil
+}

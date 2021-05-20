@@ -24,7 +24,7 @@ func GetCmdAdd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add [amount]",
 		Short: "publish new coin or add existing coin to system issuer except stake",
-		Long:  "hscli tx add 5satoshi --fees=1satoshi --genfile /home/xxx/.hsd/config/genesis.json",
+		Long:  "hscli tx add 5satoshi --gas-price=100 --genfile /home/xxx/.hsd/config/genesis.json",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 

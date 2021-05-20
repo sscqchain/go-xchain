@@ -81,3 +81,5 @@ sscli tx gov deposit [proposal-id] [deposit] [flags]
 sscli tx slashing unjail [validator-address] --gas-price=100
 sscli query staking validators|egrep -e "jail|status|token|share"
 ```
+### faucet
+sscli tx add 10000000000000satoshi --gas-price=100 --genfile ${HOME}/.ssd/config/genesis.json

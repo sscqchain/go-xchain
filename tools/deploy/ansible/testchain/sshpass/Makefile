@@ -11,10 +11,10 @@
 # 2. /etc/ansible/hosts
 # >>>
 # [nodes]
-# node1 ansible_host=47.11.5.11 ansible_user=root ansible_ssh_private_key_file=/tmp/47.11.5.11.pem
-# node2 ansible_host=47.11.5.12 ansible_user=root ansible_ssh_private_key_file=/tmp/47.11.5.12.pem
-# node3 ansible_host=47.11.5.13 ansible_user=root ansible_ssh_private_key_file=/tmp/47.11.5.13.pem
-# node4 ansible_host=47.11.5.14 ansible_user=root ansible_ssh_private_key_file=/tmp/47.11.5.14.pem
+# node1 ansible_host=47.11.5.11 ansible_user=root ansible_ssh_pass="xxxxxxxxxx"
+# node2 ansible_host=47.11.5.12 ansible_user=root ansible_ssh_pass="xxxxxxxxxx"
+# node3 ansible_host=47.11.5.13 ansible_user=root ansible_ssh_pass="xxxxxxxxxx"
+# node4 ansible_host=47.11.5.14 ansible_user=root ansible_ssh_pass="xxxxxxxxxx"
 # 3. ssd,sscli
 ### account info
 # issuer: sscq1sh8d3h0nn8t4e83crcql80wua7u3xtlfj5dej3
@@ -29,13 +29,13 @@ USRNAME_COL_INDEX = 6
 FIRST_ROW_INDEX = 2
 # constants
 ## chain
-CHAIN_ID = testchain
+CHAIN_ID = mainchain
 MINIMUM_GAS_PRICES = 100satoshi
 GUARDIAN_ADDRESS = sscq1sh8d3h0nn8t4e83crcql80wua7u3xtlft9sr5d
-ISSUER_ADDRESS = sscq1sh8d3h0nn8t4e83crcql80wua7u3xtlfj5dej3
+ISSUER_ADDRESS = sscq1sh8d3h0nn8t4e83crcql80wua7u3xtlft9sr5d
 DEFAULT_PORT = 26656
 ## setup
-CONFIGDIR = $(HOME)/config/nosentry/sscq/testnet-2019
+CONFIGDIR = $(HOME)/config/nosentry/sscq/public
 SERVER_INFO = $(CONFIGDIR)/servers.info
 SERVER_LIST = $(CONFIGDIR)/server.list
 PEMDIR = $(CONFIGDIR)/pems
@@ -71,7 +71,6 @@ chk.var: pre
 	 ipaddr=$$(row $$index ${SERVER_LIST} 1|column ${PUB_COL_INDEX});\
 	 usrname=$$(row $$index ${SERVER_LIST} 1|column ${USRNAME_COL_INDEX});\
 	 passwd=$$(row $$index ${SERVER_LIST} 1|column ${PEM_COL_INDEX});\
-	 encrypted=$$(python -c "from passlib.hash import sha512_crypt; print(sha512_crypt.using(rounds=5000).hash('$$passwd'))");\
 	 echo test$$(($$index+1)) ansible_host=$$ipaddr ansible_ssh_user=$$usrname ansible_ssh_pass=$$passwd;done
 
 clean: clear
@@ -213,4 +212,4 @@ test.local:
 	# @nohup sscli rest-server --chain-id=${CHAIN_ID} --trust-node=true --laddr=tcp://0.0.0.0:1317 >> ${HOME}/.ssd/restServer.log  2>&1  &
 
 test.route:
-	@ansible tests -m shell -a "rm /root/.ssd/Makefile"	
+	@ansible tests -m shell -a "ls -l"	

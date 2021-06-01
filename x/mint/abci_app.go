@@ -44,7 +44,7 @@ const (
 	// Block Reward of First Round
 	InitialReward = 25 * 100000000 //25sscq = 2500000000satoshi
 	// Block Count Per Round
-	BlksPerRound = 6000000 //10 //6,000,000
+	BlksPerRound = BlockPerYears //10 //6,000,000
 	// Last Round Index with Block Rewards
 	LastRoundIndex = 31
 )

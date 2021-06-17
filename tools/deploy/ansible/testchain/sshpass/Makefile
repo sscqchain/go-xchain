@@ -73,7 +73,7 @@ chk.var: pre
 	 passwd=$$(row $$index ${SERVER_LIST} 1|column ${PEM_COL_INDEX});\
 	 echo test$$(($$index+1)) ansible_host=$$ipaddr ansible_ssh_user=$$usrname ansible_ssh_pass=$$passwd;done
 
-clean: clear
+clean: 
 	@rm -rf ${GENDIR} ${VALDIR} ${CONFIGTMPDIR}
 
 ############################################################################################
@@ -87,12 +87,12 @@ pre:
 
 vals: 
 	@if ! [ -d ${VALDIR} ]; then mkdir -p ${VALDIR}; fi
-	@ssd livenet --chain-id ${CHAIN_ID} \
+	@ssd realnet --chain-id ${CHAIN_ID} \
 				 --v $$(wc ${VALIDATOR_IP} | awk '{print$$1F}') \
 				 -o ${VALDIR} \
 				 --validator-ip-addresses ${VALIDATOR_IP} \
 				 --minimum-gas-prices ${MINIMUM_GAS_PRICES} \
-				 --issuer-bech-address ${ISSUER_ADDRESS} \
+				 --accounts-file-path ${CONFIGDIR}/accounts.list \
 				 --password-from-file ${VALIDATOR_PASSWORD}
 
 genesis.json:
